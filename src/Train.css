@@ -55,7 +55,7 @@
   opacity: 1;
   transform: scale(1);
   box-shadow: 0 0 15px 4px rgba(255, 255, 255, 0.8); /* Bolder glow */
-  transition: all 1s ease;
+  transition: all 5s ease;
 }
 
 /* Shooting star effect */
@@ -85,22 +85,22 @@
 
 @keyframes shooting-star-reverse {
   0% {
-    top: 50%;
-    left: 50%;
-    opacity: 1;
-    transform: scale(2);
-    box-shadow: 0 0 30px 8px rgba(255, 255, 255, 1);
-  }
-  50% {
-    top: var(--start-top);
-    left: var(--start-left);
+    top: var(--end-top); /* Starting from the end position */
+    left: var(--end-left);
     opacity: 0.8;
     transform: scale(1);
     box-shadow: 0 0 15px 4px rgba(255, 255, 255, 0.8);
   }
+  50% {
+    top: 50%;
+    left: 50%;
+    opacity: 1;
+    transform: scale(2); /* Increased scale for bolder effect */
+    box-shadow: 0 0 30px 8px rgba(255, 255, 255, 1);
+  }
   100% {
-    top: var(--end-top);
-    left: var(--end-left);
+    top: var(--start-top); /* Ending at the start position */
+    left: var(--start-left);
     opacity: 0;
     transform: scale(0);
     box-shadow: none;
@@ -114,5 +114,5 @@
 
 /* Light beam merging from central to all */
 .central-to-all {
-  animation: shooting-star-reverse 4s forwards; /* Increased duration */
+  animation: shooting-star-reverse 4s backwards; /* Increased duration */
 }

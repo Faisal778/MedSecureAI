@@ -7,10 +7,11 @@ const Train = () => {
   const [lightDirection, setLightDirection] = useState(null);
   const [lightPosition, setLightPosition] = useState(null);
   const [centralButtons, setCentralButtons] = useState([]);
-  const [lightColor, setLightColor] = useState(null);  // Track color for the light path
+  const [lightColors, setLightColors] = useState([]);  // Track multiple colors for light beams
 
   const colors = ["#4f46e5", "#e74c3c", "#2ecc71", "#FFD700"];
 
+  // Handle when a child server's "Send" button is clicked
   const handleConnect = (index) => {
     const updatedStates = [...childStates];
     updatedStates[index] = true;
@@ -26,7 +27,7 @@ const Train = () => {
       { top: "90%", left: "90%" }, // Server 4
     ];
     setLightPosition(positions[index]);
-    setLightColor(colors[index]);  // Set light color based on server
+    setLightColors([colors[index]]);  // Add the color for the light beam
 
     // Add a button to the central server indicating the server clicked
     const serverName = `Server ${index + 1}`;
@@ -40,12 +41,13 @@ const Train = () => {
 
   const handleMerge = () => {
     setLightDirection("central-to-all");
-    setLightColor(null);  // Reset light color for the merge
     setChildStates([true, true, true, true]);
+    setLightColors(colors);  // Set all light colors when merging
     setTimeout(() => {
       setChildStates([false, false, false, false]);
       setLightDirection(null);
-      setCentralButtons([]);
+      setCentralButtons([]);  // Clear buttons after animation
+      setLightColors([]);  // Clear colors after animation
     }, 4000); // Increased duration for better visibility
   };
 
@@ -69,8 +71,30 @@ const Train = () => {
         {/* Central Server */}
         <CentralServer isActive={!!centralColor} color={centralColor} onMerge={handleMerge} buttons={centralButtons} />
 
-        {/* Light Path */}
-        {lightDirection && <LightPath direction={lightDirection} position={lightPosition} color={lightColor || "#fff"} />}
+        {/* Light Path - Multiple Lights from Central to All */}
+        {lightDirection === "central-to-all" &&
+          lightColors.map((color, index) => (
+            <LightPath
+              key={index}
+              direction="central-to-all"
+              color={color}
+              index={index}
+            />
+          ))}
+
+        {/* Light Path - Light from Child to Central */}
+        {lightDirection === "child1-to-central" && (
+          <LightPath direction="child1-to-central" color={colors[0]} index={0} />
+        )}
+        {lightDirection === "child2-to-central" && (
+          <LightPath direction="child2-to-central" color={colors[1]} index={1} />
+        )}
+        {lightDirection === "child3-to-central" && (
+          <LightPath direction="child3-to-central" color={colors[2]} index={2} />
+        )}
+        {lightDirection === "child4-to-central" && (
+          <LightPath direction="child4-to-central" color={colors[3]} index={3} />
+        )}
       </div>
     </div>
   );
@@ -106,7 +130,7 @@ const CentralServer = ({ isActive, color, onMerge, buttons }) => (
 
 // Child Server Component
 const ChildServer = ({ isActive, onConnect, position, color }) => (
-  <div className={`card w-72 bg-base-100 shadow-lg`} style={{ borderColor: isActive ? color : "transparent" }}>
+  <div className="card w-72 bg-base-100 shadow-lg" style={{ borderColor: isActive ? color : "transparent" }}>
     <figure className="px-5 pt-5">
       <img
         src="https://assets-global.website-files.com/5fbe376a36d4106214faaf3c/6205a3a7c8390c791df4025d_20220210-Training%20Data%20vs%20Prediction%20Data_Blog%20Thumbnail%20Image.png"
@@ -127,20 +151,30 @@ const ChildServer = ({ isActive, onConnect, position, color }) => (
 );
 
 // Light Path Component
-const LightPath = ({ direction, position, color }) => (
-  <div
-    className={`light-path ${direction}`}
-    style={{
-      backgroundColor: color,
-      top: position?.top || "50%",
-      left: position?.left || "50%",
-      "--start-top": position?.top,
-      "--start-left": position?.left,
-      "--end-top": "50%",
-      "--end-left": "50%",
-      animation: direction === "central-to-all" ? "shooting-star-reverse 4s forwards" : "shooting-star 4s forwards", // Reverse animation for central-to-all
-    }}
-  ></div>
-);
+const LightPath = ({ direction, color, index }) => {
+  const positions = [
+    { top: "10%", left: "10%" },  // Server 1
+    { top: "10%", left: "90%" },  // Server 2
+    { top: "90%", left: "10%" },  // Server 3
+    { top: "90%", left: "90%" },  // Server 4
+  ];
+
+  const animationClass = direction.includes("child") ? "child-to-central" : "central-to-all";
+
+  return (
+    <div
+      className={`light-path ${animationClass}`}
+      style={{
+        backgroundColor: color,
+        top: positions[index]?.top || "50%",
+        left: positions[index]?.left || "50%",
+        "--start-top": positions[index]?.top,
+        "--start-left": positions[index]?.left,
+        "--end-top": "50%",
+        "--end-left": "50%",
+      }}
+    ></div>
+  );
+};
 
 export default Train;
