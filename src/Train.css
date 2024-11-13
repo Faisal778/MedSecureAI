@@ -1,0 +1,48 @@
+/* Styling for smaller buttons with tooltips on Central Server */
+.central-server {
+  transition: border-color 0.5s ease;
+  border-width: 4px;
+}
+
+.card {
+  transition: border-color 0.5s ease;
+  border-width: 4px;
+}
+
+.small-btn {
+  padding: 0.25rem 0.5rem;
+  font-size: 0.75rem;
+  background-color: #444;
+  color: white;
+  border-radius: 4px;
+  border: none;
+  cursor: pointer;
+  width: 50px;
+  position: relative;
+}
+
+/* Tooltip styling */
+.tooltip {
+  position: relative;
+}
+
+.tooltip::before {
+  content: attr(data-tooltip);
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 5px;
+  border-radius: 4px;
+  background-color: black;
+  color: white;
+  font-size: 0.75rem;
+  opacity: 0;
+  transition: opacity 0.2s ease-in-out;
+  white-space: nowrap;
+  pointer-events: none;
+}
+
+.tooltip:hover::before {
+  opacity: 1;
+}
